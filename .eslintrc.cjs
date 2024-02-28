@@ -18,5 +18,5 @@ module.exports = {
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
   },
-  ignorePatterns: ["node_modules/", "renderer/public/", "app/"],
+  ignorePatterns: ["node_modules/", "renderer/public/", "renderer/.next", "app/"],
 };
