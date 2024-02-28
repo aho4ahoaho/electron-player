@@ -1,3 +1,4 @@
+/* eslint no-undef: "off" */
 /** @type {import('next').NextConfig} */
 module.exports = {
   trailingSlash: true,
