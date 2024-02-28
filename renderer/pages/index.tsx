@@ -1,25 +1,27 @@
 import { Button } from "antd";
-import { useRouter } from "next/router";
+import { useCallback, useEffect, useState } from "react";
+import { Directory } from "../../main/components/file/dir";
 
 const HomePage = () => {
-  const router = useRouter();
+  const [dirData, setDirData] = useState<Directory[]>([]);
+
+  useEffect(() => {
+    window.ipc.on("getDirs", (msg: Directory[]) => {
+      setDirData(msg);
+    });
+  }, []);
+
+  const onGet = useCallback(() => {
+    window.ipc.send("getDirs", ["~/Music"]);
+  }, []);
+
   return (
     <div>
       <h1>Home</h1>
-      <Button
-        onClick={() => {
-          router.push("/settings");
-        }}
-      >
-        Setting
-      </Button>
-      <Button
-        onClick={() => {
-          router.push("/about");
-        }}
-      >
-        About
-      </Button>
+      <Button onClick={onGet}>Get</Button>
+      {dirData.map((d) => (
+        <div key={d.currentPath}>{d.currentPath}</div>
+      ))}
     </div>
   );
 };
