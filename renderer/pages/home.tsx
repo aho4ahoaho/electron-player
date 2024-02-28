@@ -1,16 +1,16 @@
-import React from 'react'
-import Head from 'next/head'
-import Link from 'next/link'
-import Image from 'next/image'
+import React from "react";
+import Head from "next/head";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function HomePage() {
-  const [message, setMessage] = React.useState('No message found')
+  const [message, setMessage] = React.useState("No message found");
 
   React.useEffect(() => {
-    window.ipc.on('message', (message: string) => {
-      setMessage(message)
-    })
-  }, [])
+    window.ipc.on("message", (message: string) => {
+      setMessage(message);
+    });
+  }, []);
 
   return (
     <React.Fragment>
@@ -24,17 +24,12 @@ export default function HomePage() {
             <a>Go to next page</a>
           </Link>
         </p>
-        <Image
-          src="/images/logo.png"
-          alt="Logo image"
-          width="256px"
-          height="256px"
-        />
+        <Image src="/images/logo.png" alt="Logo image" width="256px" height="256px" />
       </div>
       <div>
         <button
           onClick={() => {
-            window.ipc.send('message', 'Hello')
+            window.ipc.send("message", "Hello");
           }}
         >
           Test IPC
@@ -42,5 +37,5 @@ export default function HomePage() {
         <p>{message}</p>
       </div>
     </React.Fragment>
-  )
+  );
 }
