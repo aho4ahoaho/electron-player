@@ -12,5 +12,9 @@ module.exports = {
       version: "detect",
     },
   },
+  rules: {
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
+  },
   ignorePatterns: ["node_modules/", "renderer/public/"],
 };
