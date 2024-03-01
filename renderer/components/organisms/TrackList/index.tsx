@@ -44,7 +44,7 @@ export const TrackList = ({ musicData }: Props) => {
                 key="codec"
                 render={(value, record) => (
                     <span>
-                        {value} {formatDataSize(record.bitrate, 0)}bps
+                        {value} {formatDataSize(record.bitrate ?? 0, 0)}bps
                     </span>
                 )}
             />
