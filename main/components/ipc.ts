@@ -30,8 +30,15 @@ export const setupIpc = (ipc: IpcMain) => {
     });
 
     ipc.on("data.getAlbumTable", async (event) => {
-        const data = await prisma.$queryRaw`SELECT album,fileId FROM MusicData WHERE album IS NOT NULL GROUP BY album;`;
+        const data =
+            await prisma.$queryRaw`SELECT artist,album,fileId FROM MusicData WHERE album IS NOT NULL GROUP BY album ORDER BY artist ASC, album ASC`;
         event.reply("data.getAlbumTable", data);
+    });
+
+    ipc.on("data.getArtistTable", async (event) => {
+        const data =
+            await prisma.$queryRaw`SELECT artist,fileId FROM MusicData WHERE artist IS NOT NULL GROUP BY artist ORDER BY artist ASC`;
+        event.reply("data.getArtistTable", data);
     });
 };
 
