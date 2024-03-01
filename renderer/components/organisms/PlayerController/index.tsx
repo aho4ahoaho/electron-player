@@ -23,7 +23,7 @@ export const PlayerController = ({ setNowPlaying }: Props) => {
 
     useEffect(() => {
         setNowPlaying?.(musicData ?? null);
-    }, [musicData]);
+    }, [musicData, setNowPlaying]);
 
     return (
         <>

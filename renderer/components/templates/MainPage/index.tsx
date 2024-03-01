@@ -54,22 +54,31 @@ export const MainPage = ({
         },
     ];
 
+    const selectTrack = (record: MusicData, index: number) => {
+        const fileIds = musicData.map((d) => d.fileId);
+        fileIds.splice(0, index);
+        staticController.setQueue(fileIds);
+        setPlaylists([...musicData]);
+        setTab("Playlist");
+    };
+
+    const selectPlaylistTrack = (_record: MusicData, index: number) => {
+        const fileIds = playlists.map((d) => d.fileId);
+        fileIds.splice(0, index);
+        staticController.setQueue(fileIds);
+    };
+
     return (
         <>
             <Menu items={items} selectedKeys={[tab]} mode="horizontal" style={{ width: "100%" }} />
-            {tab === "Playlist" && <TrackList musicData={playlists} nowPlaying={nowPlaying ?? undefined} />}
-            {tab === "Track" && (
+            {tab === "Playlist" && (
                 <TrackList
-                    musicData={musicData}
-                    selectTrack={(_, index) => {
-                        const fileIds = musicData.map((d) => d.fileId);
-                        fileIds.splice(0, index ?? 0);
-                        staticController.setQueue(fileIds, true);
-                        setPlaylists([...musicData]);
-                        setTab("Playlist");
-                    }}
+                    musicData={playlists}
+                    nowPlaying={nowPlaying ?? undefined}
+                    selectTrack={selectPlaylistTrack}
                 />
             )}
+            {tab === "Track" && <TrackList musicData={musicData} selectTrack={selectTrack} />}
             {tab === "Album" && <AlbumList albumData={albumData} selectAlbum={selectAlbum} />}
         </>
     );

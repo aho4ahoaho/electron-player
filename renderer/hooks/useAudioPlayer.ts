@@ -78,16 +78,6 @@ export const useAudioPlayer = () => {
             audioElement.src = "";
         });
 
-        window.ipc.on("player.play", () => {
-            audioElement.addEventListener(
-                "loadedmetadata",
-                () => {
-                    controller.play();
-                },
-                { once: true }
-            );
-        });
-
         const onEnded = () => {
             controller.next();
         };
@@ -96,10 +86,14 @@ export const useAudioPlayer = () => {
             setCurrentTime(audioElement.currentTime);
         };
         audioElement.addEventListener("timeupdate", onTimeUpdate);
-
+        const onLoadedMetadata = () => {
+            audioElement.play();
+        };
+        audioElement.addEventListener("loadedmetadata", onLoadedMetadata);
         return () => {
             audioElement.removeEventListener("ended", onEnded);
             audioElement.removeEventListener("timeupdate", onTimeUpdate);
+            audioElement.removeEventListener("loadedmetadata", onLoadedMetadata);
         };
     }, [audioElmRef, controller]);
 
@@ -121,7 +115,7 @@ export const staticController = {
     prev: () => {
         window.ipc.send("player.prev", null);
     },
-    setQueue: (fileIds: number[], play: boolean) => {
-        window.ipc.send("player.setQueue", { fileIds, play });
+    setQueue: (fileIds: number[]) => {
+        window.ipc.send("player.setQueue", { fileIds });
     },
 };

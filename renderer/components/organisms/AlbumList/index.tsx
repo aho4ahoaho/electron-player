@@ -38,7 +38,7 @@ export const AlbumList = ({ albumData, selectAlbum }: Props) => {
                 URL.revokeObjectURL(d.blob);
             });
         };
-    }, []);
+    }, [coverArt]);
 
     useEffect(() => {
         window.ipc.send("data.getCoverArt", { fileIds: albumData.map((d) => d.fileId) });

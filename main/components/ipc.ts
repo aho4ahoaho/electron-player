@@ -91,10 +91,6 @@ export const setupIpcDefer = (ipc: IpcMain, { mainWindow }: { mainWindow: Browse
             musicPlayer = new MusicPlayer(fileIds);
         }
         await setFile();
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        if (play) {
-            mainWindow.webContents.send("player.play");
-        }
     });
 
     const skipTrack = async (prev = false) => {
