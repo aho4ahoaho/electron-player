@@ -2,14 +2,20 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+export type PlayerState = "playing" | "paused" | "stopped";
 export class MusicPlayer {
     readonly fileIds: number[];
-    index: number = 0;
+    private index: number = 0;
+    state: PlayerState = "stopped";
+
     constructor(fileIds: number[]) {
         this.fileIds = fileIds;
     }
 
     async getTrack() {
+        if (this.index < 0 || this.index >= this.fileIds.length) {
+            return null;
+        }
         const nowTrackFileId = this.fileIds[this.index];
         const data = await prisma.file.findFirst({
             where: {
@@ -20,6 +26,18 @@ export class MusicPlayer {
             },
         });
         return data;
+    }
+
+    play() {
+        this.state = "playing";
+    }
+
+    pause() {
+        this.state = "paused";
+    }
+
+    stop() {
+        this.state = "stopped";
     }
 
     next() {

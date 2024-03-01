@@ -13,6 +13,9 @@ module.exports = {
         react: {
             version: "detect",
         },
+        "import/resolver": {
+            typescript: {},
+        }
     },
     rules: {
         "react/jsx-uses-react": "off",
@@ -20,4 +23,5 @@ module.exports = {
         "react/display-name": "off",
     },
     ignorePatterns: ["node_modules/", "renderer/public/", "renderer/.next", "app/"],
+
 };

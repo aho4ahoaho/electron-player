@@ -20,7 +20,10 @@ export const TrackList = ({ musicData }: Props) => {
                     onClick: () => {
                         const fileIds = musicData.map((d) => d.fileId);
                         fileIds.splice(0, index ?? 0);
-                        window.ipc.send<number[]>("play", fileIds);
+                        window.ipc.send<{ fileIds: number[]; play: boolean }>("player.setQueue", {
+                            fileIds,
+                            play: true,
+                        });
                     },
                 };
             }}

@@ -7,12 +7,12 @@ const HomePage = () => {
     const [musicData, setMusicData] = useState<MusicData[]>([]);
 
     useEffect(() => {
-        window.ipc.on<MusicData[]>("getMusicTable", (msg) => {
+        window.ipc.on<MusicData[]>("data.getMusicTable", (msg) => {
             console.log(msg);
             setMusicData(msg);
         });
 
-        window.ipc.send("getMusicTable", { targetDirPath: ["~/Music"], search: {} });
+        window.ipc.send("data.getMusicTable", { targetDirPath: ["~/Music"], search: {} });
     }, []);
 
     return (

@@ -2,42 +2,51 @@ import { Button, ButtonProps, Flex, Slider } from "antd";
 import { CaretRightFilled, PauseOutlined, StepBackwardOutlined, StepForwardOutlined } from "@ant-design/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import style from "./style.module.scss";
-import { concatClassName } from "../../../utils/className";
-import { formatTime } from "../../../utils/time";
+import { concatClassName } from "@renderer/utils/className";
+import { formatTime } from "@renderer/utils/time";
+import { PlayerState } from "@main/components/music/player";
+import { debounce } from "@renderer/utils/debounce";
 
 import type { MusicData } from "@prisma/client";
 
-export enum PlayerState {
-    Playing,
-    Paused,
-}
 export const Player = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [state, setState] = useState<PlayerState>(PlayerState.Paused);
+    const [state, setState] = useState<PlayerState>("stopped");
     const [musicData, setMusicData] = useState<MusicData>();
     const [currentTime, setCurrentTime] = useState(0);
+    const seekDebounce = useMemo(
+        () =>
+            debounce<number>((value) => {
+                window.ipc.send("player.setTime", value);
+            }, 50),
+        []
+    );
 
     useEffect(() => {
         window.ipc.on<MusicData>("player.metadata", (data) => {
+            console.log("player.metadata", data);
             setMusicData(data);
         });
         window.ipc.on("player.play", () => {
-            setState(PlayerState.Playing);
+            setState("playing");
         });
         window.ipc.on("player.pause", () => {
-            setState(PlayerState.Paused);
+            setState("paused");
         });
         window.ipc.on("player.end", () => {
-            setState(PlayerState.Paused);
+            setState("stopped");
         });
         window.ipc.on<number>("player.timeUpdate", (time) => {
             setCurrentTime(time);
         });
     }, []);
 
-    const onSeek = useCallback((value: number) => {
-        window.ipc.send("player.setTime", value);
-    }, []);
+    const onSeek = useCallback(
+        (value: number) => {
+            seekDebounce(value);
+        },
+        [seekDebounce]
+    );
 
     return (
         <Flex className={style.playerContainer}>
@@ -46,7 +55,11 @@ export const Player = () => {
                 state={state}
                 style={{ fontSize: 32, width: 48, height: 48 }}
                 onClick={() => {
-                    window.ipc.send("player.toggle", PlayerState.Playing === state ? "pause" : "play");
+                    if (state === "playing") {
+                        window.ipc.send("player.pause", null);
+                    } else {
+                        window.ipc.send("player.play", null);
+                    }
                 }}
             />
             <NextBtn />
@@ -57,7 +70,7 @@ export const Player = () => {
                         {formatTime(currentTime)} / {formatTime(musicData?.duration)}
                     </span>
                 </Flex>
-                <Slider min={0} max={musicData?.duration} style={{ flex: 1 }} onChangeComplete={onSeek} />
+                <Slider min={0} max={musicData?.duration} style={{ flex: 1 }} value={currentTime} onChange={onSeek} />
             </Flex>
         </Flex>
     );
@@ -67,10 +80,10 @@ const CtrlBtn = (props: { state: PlayerState } & ButtonProps) => {
     const { state, className } = props;
     const btn = useMemo(() => {
         switch (state) {
-            case PlayerState.Paused:
-                return <CaretRightFilled />;
-            default:
+            case "playing":
                 return <PauseOutlined />;
+            default:
+                return <CaretRightFilled />;
         }
     }, [state]);
     return (
