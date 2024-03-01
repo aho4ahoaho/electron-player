@@ -8,10 +8,10 @@ type MetaData = {
 export class MusicData {
     readonly path: string;
     title: string;
-    trackNo: number = -1;
+    trackNo: number | null = null;
     artist: string = "";
     album: string = "";
-    year: number = -1;
+    year: number | null = null;
     codec: string;
     duration: number = -1;
     lossless: boolean = false;

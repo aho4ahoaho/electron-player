@@ -3,6 +3,7 @@ import { CaretRightFilled, PauseOutlined, StepBackwardOutlined, StepForwardOutli
 import { useCallback, useEffect, useMemo, useState } from "react";
 import style from "./style.module.scss";
 import { concatClassName } from "../../../utils/className";
+import { formatTime } from "../../../utils/time";
 
 import type { MusicData } from "@prisma/client";
 
@@ -15,6 +16,7 @@ export const Player = () => {
     const [state, setState] = useState<PlayerState>(PlayerState.Paused);
     const [musicData, setMusicData] = useState<MusicData>();
     const [currentTime, setCurrentTime] = useState(0);
+
     useEffect(() => {
         window.ipc.on<MusicData>("player.metadata", (data) => {
             setMusicData(data);
@@ -44,7 +46,7 @@ export const Player = () => {
                 state={state}
                 style={{ fontSize: 32, width: 48, height: 48 }}
                 onClick={() => {
-                    setState(state === PlayerState.Playing ? PlayerState.Paused : PlayerState.Playing);
+                    window.ipc.send("player.toggle", PlayerState.Playing === state ? "pause" : "play");
                 }}
             />
             <NextBtn />
@@ -92,11 +94,4 @@ const NextBtn = (props: ButtonProps) => {
             <StepForwardOutlined />
         </Button>
     );
-};
-
-const formatTime = (time: number | undefined) => {
-    if (!time) return "00:00";
-    const min = Math.floor(time / 60);
-    const sec = Math.floor(time % 60);
-    return `${min.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
 };
