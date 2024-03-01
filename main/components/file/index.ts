@@ -38,8 +38,6 @@ const generateDirTable = async (dirPaths: string[]): Promise<DirectoryRow[]> => 
         return dirs.flatMap(flattenDirs);
     });
 
-    console.log("dirs", dirs);
-
     const data = await prisma.$transaction(async (prisma) => {
         const upserts = await Promise.all(
             dirs.map((d) => {
@@ -92,7 +90,6 @@ const generateDirTable = async (dirPaths: string[]): Promise<DirectoryRow[]> => 
 };
 
 export const scanDirectories = async (dirPaths: string[]): Promise<Directory[]> => {
-    console.log("scanDirectories", dirPaths);
     const dirs = (await Promise.all(
         dirPaths
             .map(async (d) => {

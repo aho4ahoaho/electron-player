@@ -14,6 +14,7 @@ export class Directory {
     recursive: boolean;
     constructor(path: string, options: Options = { recursive: true }) {
         this.currentPath = path;
+        this.recursive = !!options.recursive;
         if (options.recursive) {
             this.scan();
         }
@@ -31,7 +32,6 @@ export class Directory {
                 this.files.push(new File(path));
             }
         }
-        console.log("scan", this);
     }
 
     async scanAsync(recursive = true) {

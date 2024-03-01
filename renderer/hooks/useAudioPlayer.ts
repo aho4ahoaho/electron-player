@@ -1,7 +1,6 @@
 import { PlayerState } from "@main/components/music/player";
 import { MusicData } from "@prisma/client";
-import { debounce } from "@renderer/utils/debounce";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type AudioController = {
     play: () => void;
@@ -16,11 +15,12 @@ export const useAudioPlayer = () => {
     const [state, setState] = useState<PlayerState>("paused");
     const [musicData, setMusicData] = useState<MusicData>();
     const [currentTime, setCurrentTime] = useState(0);
+    const [volume, setVolume] = useState(100);
+
     const audioElmRef = useRef<HTMLAudioElement>(null);
 
     useEffect(() => {
         window.ipc.on<MusicData>("player.metadata", (data) => {
-            console.log("player.metadata", data);
             setMusicData(data);
         });
     }, []);
@@ -28,14 +28,41 @@ export const useAudioPlayer = () => {
     useEffect(() => {
         const audioElement = audioElmRef.current;
         if (!audioElement) return;
+        audioElement.volume = volume / 100;
+    }, [volume]);
+
+    const prevSeekTimeRef = useRef<NodeJS.Timeout>();
+    const controller: AudioController = {
+        ...staticController,
+        play: () => {
+            audioElmRef.current?.play();
+            setState("playing");
+        },
+        pause: () => {
+            audioElmRef.current?.pause();
+            setState("paused");
+        },
+        seek: (time: number) => {
+            if (!audioElmRef.current) return;
+            clearTimeout(prevSeekTimeRef.current);
+            audioElmRef.current?.pause();
+            audioElmRef.current.currentTime = time;
+            prevSeekTimeRef.current = setTimeout(() => {
+                audioElmRef.current?.play();
+            }, 200);
+        },
+    };
+
+    useEffect(() => {
+        const audioElement = audioElmRef.current;
+        if (!audioElement) return;
 
         window.ipc.on<Buffer>("player.setFile", (buffer) => {
-            console.log("player.setFile", buffer.length);
             audioElement.pause();
             if (audioElement.src) {
                 URL.revokeObjectURL(audioElement.src);
             }
-            const blob = new Blob([buffer], { type: "audio/mpeg" });
+            const blob = new Blob([buffer]);
             const url = URL.createObjectURL(blob);
             audioElement.src = url;
         });
@@ -48,7 +75,13 @@ export const useAudioPlayer = () => {
         });
 
         window.ipc.on("player.play", () => {
-            controller.play();
+            audioElement.addEventListener(
+                "loadedmetadata",
+                () => {
+                    controller.play();
+                },
+                { once: true }
+            );
         });
 
         const onEnded = () => {
@@ -59,25 +92,12 @@ export const useAudioPlayer = () => {
             setCurrentTime(audioElement.currentTime);
         };
         audioElement.addEventListener("timeupdate", onTimeUpdate);
-    }, [audioElmRef]);
 
-    const controller: AudioController = {
-        ...staticController,
-        play: () => {
-            audioElmRef.current?.play();
-            setState("playing");
-        },
-        pause: () => {
-            audioElmRef.current?.pause();
-            setState("paused");
-        },
-        seek: useMemo(() => {
-            return debounce<number>((value) => {
-                if (!audioElmRef.current) return;
-                audioElmRef.current.currentTime = value;
-            }, 50);
-        }, [audioElmRef]),
-    };
+        return () => {
+            audioElement.removeEventListener("ended", onEnded);
+            audioElement.removeEventListener("timeupdate", onTimeUpdate);
+        };
+    }, [audioElmRef, controller]);
 
     return {
         currentTime,
@@ -85,6 +105,8 @@ export const useAudioPlayer = () => {
         state,
         audioElmRef,
         controller,
+        volume,
+        setVolume,
     };
 };
 

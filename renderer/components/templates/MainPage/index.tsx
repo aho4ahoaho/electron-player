@@ -14,7 +14,6 @@ export const useMainPage = (): Props => {
 
     useEffect(() => {
         window.ipc.on<MusicData[]>("data.getMusicTable", (msg) => {
-            console.log(msg);
             setMusicData(msg);
         });
 

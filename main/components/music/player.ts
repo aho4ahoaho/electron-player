@@ -41,7 +41,7 @@ export class MusicPlayer {
     }
 
     next() {
-        this.index++;
+        this.index += 1;
     }
 
     prev() {

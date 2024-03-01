@@ -39,20 +39,21 @@ export const setupIpcDefer = (ipc: IpcMain, { mainWindow }: { mainWindow: Browse
         }
     });
 
-    const skipTrack = async (prev = true) => {
-        mainWindow.webContents.send("player.next");
+    const skipTrack = async (prev = false) => {
         if (prev) {
             musicPlayer.prev();
         } else {
             musicPlayer.next();
         }
         const data = await musicPlayer.getTrack();
+
         if (!data) {
             mainWindow.webContents.send("player.stop");
             return;
         }
         await setFile();
         await new Promise((resolve) => setTimeout(resolve, 100));
+        mainWindow.webContents.send("player.play");
     };
 
     ipc.on("player.end", async () => {
@@ -61,9 +62,11 @@ export const setupIpcDefer = (ipc: IpcMain, { mainWindow }: { mainWindow: Browse
     });
     ipc.on("player.next", async () => {
         await skipTrack();
+        await setFile();
     });
     ipc.on("player.prev", async () => {
         await skipTrack(true);
+        await setFile();
     });
 };
 /*eslint-enable @typescript-eslint/no-unused-vars*/

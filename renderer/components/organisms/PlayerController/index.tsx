@@ -1,5 +1,11 @@
-import { Button, ButtonProps, Flex, Slider } from "antd";
-import { CaretRightFilled, PauseOutlined, StepBackwardOutlined, StepForwardOutlined } from "@ant-design/icons";
+import { Button, ButtonProps, Dropdown, Flex, MenuProps, Slider } from "antd";
+import {
+    CaretRightFilled,
+    MutedFilled,
+    PauseOutlined,
+    StepBackwardOutlined,
+    StepForwardOutlined,
+} from "@ant-design/icons";
 import { useMemo } from "react";
 import style from "./style.module.scss";
 import { concatClassName } from "@renderer/utils/className";
@@ -9,12 +15,12 @@ import { PlayerState } from "@main/components/music/player";
 import { useAudioPlayer } from "@renderer/hooks/useAudioPlayer";
 
 export const PlayerController = () => {
-    const { state, currentTime, musicData, audioElmRef, controller } = useAudioPlayer();
+    const { state, currentTime, musicData, audioElmRef, controller, volume, setVolume } = useAudioPlayer();
 
     return (
         <>
             <Flex className={style.playerContainer}>
-                <PrevBtn />
+                <PrevBtn onClick={controller.prev} />
                 <CtrlBtn
                     state={state}
                     style={{ fontSize: 32, width: 48, height: 48 }}
@@ -26,7 +32,7 @@ export const PlayerController = () => {
                         }
                     }}
                 />
-                <NextBtn />
+                <NextBtn onClick={controller.next} />
                 <Flex vertical style={{ flex: 1 }}>
                     <Flex justify="space-between">
                         <span>{musicData?.title ?? "再生中の楽曲はありません"}</span>
@@ -40,10 +46,22 @@ export const PlayerController = () => {
                         style={{ flex: 1 }}
                         value={currentTime}
                         onChange={controller.seek}
+                        tooltip={{ formatter: (value) => formatTime(value) }}
                     />
                 </Flex>
+                <VolumeSlider volume={volume} setVolume={setVolume} />
             </Flex>
-            <div style={{ position: "fixed", right: 0, bottom: 0, opacity: 0.5, backgroundColor: "lightblue" }}>
+
+            <div
+                style={{
+                    position: "fixed",
+                    right: 0,
+                    bottom: 0,
+                    opacity: 0.5,
+                    backgroundColor: "lightblue",
+                    display: "none",
+                }}
+            >
                 <p>Player</p>
                 <audio controls ref={audioElmRef} />
             </div>
@@ -81,5 +99,19 @@ const NextBtn = (props: ButtonProps) => {
         <Button {...props} type="default" shape="circle">
             <StepForwardOutlined />
         </Button>
+    );
+};
+
+const VolumeSlider = ({ volume, setVolume }: { volume: number; setVolume: (vol: number) => void }) => {
+    const items: MenuProps["items"] = [
+        {
+            key: "1",
+            label: <Slider style={{ width: 128 }} onChange={setVolume} value={volume} />,
+        },
+    ];
+    return (
+        <Dropdown menu={{ items }}>
+            <MutedFilled />
+        </Dropdown>
     );
 };
