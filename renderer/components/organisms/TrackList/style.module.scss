@@ -1,5 +1,9 @@
 .row {
     cursor: pointer;
+
+    &.nowPlaying {
+        background-color: lightgray;
+    }
 }
 
 .center {

@@ -12,18 +12,36 @@ type Props = {
     selectAlbum: (album?: string) => void;
     tab: MainPageTab;
     setTab: (tab: MainPageTab) => void;
+    playlists: MusicData[];
+    setPlaylists: (playlists: MusicData[]) => void;
+    nowPlaying: MusicData | null;
+    setNowPlaying: (nowPlaying: MusicData | null) => void;
 };
 
 export type AlbumData = {
     album: string;
     fileId: number;
 };
-export const MainPage = ({ musicData, albumData, selectAlbum, tab, setTab }: Props) => {
+export const MainPage = ({
+    musicData,
+    albumData,
+    selectAlbum,
+    tab,
+    setTab,
+    playlists,
+    setPlaylists,
+    nowPlaying,
+}: Props) => {
     const items: Array<
         ItemType<MenuItemType> & {
             key: MainPageTab;
         }
     > = [
+        {
+            key: "Playlist",
+            label: "Playlist",
+            onClick: () => setTab("Playlist"),
+        },
         {
             key: "Album",
             label: "Album",
@@ -39,7 +57,7 @@ export const MainPage = ({ musicData, albumData, selectAlbum, tab, setTab }: Pro
     return (
         <>
             <Menu items={items} selectedKeys={[tab]} mode="horizontal" style={{ width: "100%" }} />
-
+            {tab === "Playlist" && <TrackList musicData={playlists} nowPlaying={nowPlaying ?? undefined} />}
             {tab === "Track" && (
                 <TrackList
                     musicData={musicData}
@@ -47,6 +65,8 @@ export const MainPage = ({ musicData, albumData, selectAlbum, tab, setTab }: Pro
                         const fileIds = musicData.map((d) => d.fileId);
                         fileIds.splice(0, index ?? 0);
                         staticController.setQueue(fileIds, true);
+                        setPlaylists([...musicData]);
+                        setTab("Playlist");
                     }}
                 />
             )}
@@ -55,11 +75,13 @@ export const MainPage = ({ musicData, albumData, selectAlbum, tab, setTab }: Pro
     );
 };
 
-type MainPageTab = "Track" | "Album" | "All";
+type MainPageTab = "Track" | "Album" | "Playlist";
 export const useMainPage = (): Props => {
     const [tab, setTab] = useState<MainPageTab>("Album");
     const [musicData, setMusicData] = useState<MusicData[]>([]);
     const [albumData, setAlbumData] = useState<AlbumData[]>([]);
+    const [playlists, setPlaylists] = useState<MusicData[]>([]);
+    const [nowPlaying, setNowPlaying] = useState<MusicData | null>(null);
 
     useEffect(() => {
         window.ipc.on<MusicData[]>("data.getMusicTable", (msg) => {
@@ -78,5 +100,5 @@ export const useMainPage = (): Props => {
         setTab("Track");
     };
 
-    return { musicData, albumData, selectAlbum, tab, setTab };
+    return { musicData, albumData, selectAlbum, tab, setTab, playlists, setPlaylists, nowPlaying, setNowPlaying };
 };

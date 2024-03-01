@@ -10,12 +10,14 @@ const HomePage = () => {
     const [page, setPage] = useState<Page>("Home");
 
     const mainPageProps = useMainPage();
+    const { setNowPlaying } = mainPageProps;
+
     return (
         <Layout>
             <Header page={page} setPage={setPage} />
             {page === "Home" && <MainPage {...mainPageProps} />}
             {page === "Settings" && <SettingsPage />}
-            <PlayerController />
+            <PlayerController setNowPlaying={setNowPlaying} />
         </Layout>
     );
 };

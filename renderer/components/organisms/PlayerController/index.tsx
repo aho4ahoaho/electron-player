@@ -6,16 +6,24 @@ import {
     StepBackwardOutlined,
     StepForwardOutlined,
 } from "@ant-design/icons";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import style from "./style.module.scss";
 import { concatClassName } from "@renderer/utils/className";
 import { formatTime } from "@renderer/utils/time";
 import { PlayerState } from "@main/components/music/player";
 
 import { useAudioPlayer } from "@renderer/hooks/useAudioPlayer";
+import { MusicData } from "@prisma/client";
 
-export const PlayerController = () => {
+type Props = {
+    setNowPlaying?: (nowPlaying: MusicData | null) => void;
+};
+export const PlayerController = ({ setNowPlaying }: Props) => {
     const { state, currentTime, musicData, audioElmRef, controller, volume, setVolume } = useAudioPlayer();
+
+    useEffect(() => {
+        setNowPlaying?.(musicData ?? null);
+    }, [musicData]);
 
     return (
         <>

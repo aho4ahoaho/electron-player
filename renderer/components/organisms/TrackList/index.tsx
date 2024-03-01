@@ -3,21 +3,24 @@ import { MusicData } from "@prisma/client";
 import { formatTime } from "../../../utils/time";
 import { formatDataSize } from "../../../utils/dataSize";
 import style from "./style.module.scss";
+import { concatClassName } from "@renderer/utils/className";
 
 type Props = {
     musicData: MusicData[];
     selectTrack?: (record: MusicData, index: number) => void;
+    nowPlaying?: MusicData;
 };
 
 const { Column } = Table;
 
-export const TrackList = ({ musicData, selectTrack }: Props) => {
+export const TrackList = ({ musicData, selectTrack, nowPlaying }: Props) => {
     return (
         <Table
             dataSource={musicData.map((d) => ({ ...d, key: d.id }))}
             onRow={(record, index) => {
+                const isNowPlaying = nowPlaying?.id === record.id;
                 return {
-                    className: style.row,
+                    className: concatClassName(style.row, isNowPlaying && style.nowPlaying),
                     onClick: () => {
                         selectTrack?.(record, index ?? 0);
                     },
