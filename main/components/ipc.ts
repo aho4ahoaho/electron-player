@@ -64,15 +64,9 @@ export const setupIpcDefer = (ipc: IpcMain, { mainWindow }: { mainWindow: Browse
         mainWindow.webContents.send("player.play");
     };
 
-    ipc.on("player.end", async () => {
-        await skipTrack();
-        await setFile();
-    });
     ipc.on("player.next", async () => {
-        console.log("next3");
         await skipTrack();
         await setFile();
-        console.log("next4");
     });
     ipc.on("player.prev", async () => {
         await skipTrack(true);

@@ -89,7 +89,7 @@ export const useAudioPlayer = () => {
         });
 
         const onEnded = () => {
-            window.ipc.send("player.end", null);
+            controller.next();
         };
         audioElement.addEventListener("ended", onEnded);
         const onTimeUpdate = () => {
@@ -116,9 +116,7 @@ export const useAudioPlayer = () => {
 
 export const staticController = {
     next: () => {
-        console.log("next1");
         window.ipc.send("player.next", null);
-        console.log("next2");
     },
     prev: () => {
         window.ipc.send("player.prev", null);
