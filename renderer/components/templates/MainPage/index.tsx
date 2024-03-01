@@ -67,7 +67,6 @@ export const useMainPage = (): Props => {
         });
 
         window.ipc.on<AlbumData[]>("data.getAlbumTable", (msg) => {
-            console.log("getAlbumTable", msg);
             setAlbumData(msg);
         });
 
