@@ -4,20 +4,25 @@ import { MusicData } from "./musicData";
 export class File {
   readonly currentPath: string;
   private metadata: MusicData | null = null;
-  constructor(path: string) {
-    this.currentPath = path;
+  readonly name: string;
+  readonly ext: string;
+  constructor(filePath: string) {
+    this.currentPath = filePath;
+    this.name = path.basename(this.currentPath);
+    this.ext = path.extname(this.currentPath);
   }
   async scanData() {
     if (this.metadata) return this.metadata;
     this.metadata = await new MusicData(this.currentPath).scanData();
   }
-  getExt() {
-    return path.extname(this.currentPath);
+  getMetadata() {
+    return this.metadata;
   }
   toJSON() {
     return {
       path: this.currentPath,
-      ext: this.getExt(),
+      name: this.name,
+      ext: this.ext,
       metadata: this.metadata?.toJSON(),
     };
   }

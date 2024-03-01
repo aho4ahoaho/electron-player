@@ -1,32 +1,42 @@
-import { parseFile } from "music-metadata";
+import { IAudioMetadata, parseFile } from "music-metadata";
+import path from "path";
 
+type MetaData = {
+  common: Partial<IAudioMetadata["common"]>;
+  format: Partial<IAudioMetadata["format"]>;
+};
 export class MusicData {
   readonly path: string;
   title: string;
-  trackNumber: number;
-  artist: string;
-  album: string;
-  year: number;
+  trackNo: number = -1;
+  artist: string = "";
+  album: string = "";
+  year: number = -1;
   codec: string;
-  duration: number;
-  lossless: boolean;
-  bitrate: number;
+  duration: number = -1;
+  lossless: boolean = false;
+  bitrate: number = -1;
 
-  constructor(path: string) {
-    this.path = path;
+  constructor(filePath: string) {
+    this.path = filePath;
+    this.title = path.basename(filePath).split(".").slice(0, -1).join(".");
+    this.codec = path.extname(filePath);
   }
 
   async scanData() {
-    const data = await parseFile(this.path);
-    this.title = data.common.title;
-    this.trackNumber = data.common.track.no;
-    this.artist = data.common.artist;
-    this.album = data.common.album;
-    this.year = data.common.year;
-    this.duration = data.format.duration;
-    this.codec = data.format.codec;
-    this.lossless = data.format.lossless;
-    this.bitrate = data.format.bitrate;
+    const data: MetaData = await parseFile(this.path);
+
+    const { title, track, artist, album, year } = data.common;
+    const { duration, codec, lossless, bitrate } = data.format;
+    title && (this.title = title);
+    track?.no && (this.trackNo = track.no);
+    artist && (this.artist = artist);
+    album && (this.album = album);
+    year && (this.year = year);
+    duration && (this.duration = duration);
+    codec && (this.codec = codec);
+    lossless && (this.lossless = lossless);
+    bitrate && (this.bitrate = bitrate);
 
     return this;
   }
@@ -40,7 +50,7 @@ export class MusicData {
     return {
       path: this.path,
       title: this.title,
-      trackNumber: this.trackNumber,
+      trackNo: this.trackNo,
       artist: this.artist,
       album: this.album,
       year: this.year,
