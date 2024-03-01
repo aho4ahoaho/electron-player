@@ -24,6 +24,12 @@ export const TrackList = ({ musicData, selectTrack }: Props) => {
                 };
             }}
         >
+            <Column
+                title="No"
+                dataIndex="trackNo"
+                key="trackNo"
+                render={(value) => <span className={style.center}>{value}</span>}
+            />
             <Column title="Title" dataIndex="title" key="title" />
             <Column title="Artist" dataIndex="artist" key="artist" />
             <Column title="Album" dataIndex="album" key="album" />
