@@ -11,6 +11,20 @@ export const getMusicTable = async (
     await getDirs(targetDirPath, { forceScan });
     const data = await prisma.musicData.findMany({
         where: search,
+        orderBy: [
+            {
+                artist: "asc",
+            },
+            {
+                album: "asc",
+            },
+            {
+                trackNo: "asc",
+            },
+            {
+                title: "asc",
+            },
+        ],
     });
     return data;
 };

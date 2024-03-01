@@ -18,14 +18,14 @@ CREATE TABLE "File" (
 CREATE TABLE "MusicData" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "title" TEXT NOT NULL,
-    "trackNo" INTEGER NOT NULL,
-    "album" TEXT NOT NULL,
-    "artist" TEXT NOT NULL,
-    "year" INTEGER NOT NULL,
     "codec" TEXT NOT NULL,
     "duration" INTEGER NOT NULL,
-    "lossless" BOOLEAN NOT NULL,
-    "bitrate" INTEGER NOT NULL,
+    "trackNo" INTEGER,
+    "album" TEXT,
+    "artist" TEXT,
+    "year" INTEGER,
+    "lossless" BOOLEAN,
+    "bitrate" INTEGER,
     "fileId" INTEGER NOT NULL,
     CONSTRAINT "MusicData_fileId_fkey" FOREIGN KEY ("fileId") REFERENCES "File" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );

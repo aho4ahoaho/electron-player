@@ -12,8 +12,21 @@ const prisma = new PrismaClient();
 
 export const setupIpc = (ipc: IpcMain) => {
     ipc.on("data.getMusicTable", async (event, arg: { targetDirPath: string[]; search: any }) => {
+        if (!Array.isArray(arg.targetDirPath)) {
+            console.error("Invalid targetDirPath", arg.targetDirPath);
+            return [];
+        }
         const data = await getMusicTable(arg.targetDirPath, { search: arg.search });
         event.reply("data.getMusicTable", data, arg.search);
+    });
+
+    ipc.on("data.rescanMusicTable", async (event, arg: { targetDirPath: string[] }) => {
+        if (!Array.isArray(arg.targetDirPath)) {
+            console.error("Invalid targetDirPath", arg.targetDirPath);
+            return [];
+        }
+        const data = await getMusicTable(arg.targetDirPath, { forceScan: true });
+        event.reply("data.rescanData", data);
     });
 
     ipc.on("data.getAlbumTable", async (event) => {

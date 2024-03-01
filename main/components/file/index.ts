@@ -1,7 +1,7 @@
 import { Directory } from "./dir";
 import { PrismaClient, Directory as DirectoryRow, Prisma } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({});
 
 export const getDirs = async (
     targetDirPath: string[],
@@ -40,7 +40,7 @@ const generateDirTable = async (dirPaths: string[]): Promise<DirectoryRow[]> => 
 
     const data = await prisma.$transaction(async (prisma) => {
         const upserts = await Promise.all(
-            dirs.map((d) => {
+            dirs.map(async (d) => {
                 const files: Prisma.FileCreateInput[] = d.getFiles().map((f) => {
                     const metadata = f.getMetadata();
                     return {
@@ -64,7 +64,19 @@ const generateDirTable = async (dirPaths: string[]): Promise<DirectoryRow[]> => 
                             : undefined,
                     };
                 });
-                return prisma.directory.upsert({
+
+                //一度メタデータはすべて削除する
+                await prisma.musicData.deleteMany({
+                    where: {
+                        file: {
+                            currentPath: {
+                                in: files.map((f) => f.currentPath),
+                            },
+                        },
+                    },
+                });
+
+                return await prisma.directory.upsert({
                     where: {
                         currentPath: d.currentPath,
                     },
@@ -83,7 +95,10 @@ const generateDirTable = async (dirPaths: string[]): Promise<DirectoryRow[]> => 
                     },
                 });
             })
-        );
+        ).catch((e) => {
+            console.error(e);
+            throw e;
+        });
         return upserts;
     });
     return data;

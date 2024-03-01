@@ -7,7 +7,7 @@ import { ConfigProvider } from "antd";
 const MyDocument = () => (
     <Html lang="ja">
         <Head />
-        <body style={{ margin: 0, height: "100vh" }}>
+        <body style={{ margin: 0 }}>
             <Main />
             <NextScript />
         </body>
