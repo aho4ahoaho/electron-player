@@ -1,10 +1,13 @@
 import { IAudioMetadata, parseFile } from "music-metadata";
 import path from "path";
+import fs from "fs/promises";
 
 type MetaData = {
     common: Partial<IAudioMetadata["common"]>;
     format: Partial<IAudioMetadata["format"]>;
 };
+
+const coverArtName = ["Cover", "cover", "folder", "Folder", "AlbumArt", "albumart"];
 export class MusicData {
     readonly path: string;
     title: string;
@@ -24,7 +27,7 @@ export class MusicData {
     }
 
     async scanData() {
-        const data: MetaData = await parseFile(this.path);
+        const data: MetaData = await parseFile(this.path, { skipCovers: true });
 
         const { title, track, artist, album, year } = data.common;
         const { duration, codec, lossless, bitrate } = data.format;
@@ -42,6 +45,12 @@ export class MusicData {
     }
 
     async getCover() {
+        const dirPath = path.dirname(this.path);
+        const files = await fs.readdir(dirPath);
+        const coverArt = files.find((f) => coverArtName.some((n) => f.includes(n)));
+        if (coverArt) {
+            return await fs.readFile(path.join(dirPath, coverArt));
+        }
         const data = await parseFile(this.path, { skipCovers: false });
         return data.common.picture;
     }

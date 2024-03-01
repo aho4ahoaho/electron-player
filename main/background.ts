@@ -33,7 +33,7 @@ if (isProd) {
     } else {
         const port = process.argv[2];
         await mainWindow.loadURL(`http://localhost:${port}/`);
-        //mainWindow.webContents.openDevTools({ mode: "detach", activate: false });
+        mainWindow.webContents.openDevTools({ mode: "detach", activate: false });
     }
     setupIpcDefer(ipcMain, { mainWindow });
 })();

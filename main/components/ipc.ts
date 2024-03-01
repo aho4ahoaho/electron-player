@@ -4,6 +4,7 @@ import { MusicPlayer } from "./music/player";
 import { readFile } from "fs/promises";
 import { type BrowserWindow } from "electron";
 import { PrismaClient } from "@prisma/client";
+import { MusicData } from "./file/musicData";
 
 const prisma = new PrismaClient();
 
@@ -39,6 +40,35 @@ export const setupIpc = (ipc: IpcMain) => {
         const data =
             await prisma.$queryRaw`SELECT artist,fileId FROM MusicData WHERE artist IS NOT NULL GROUP BY artist ORDER BY artist ASC`;
         event.reply("data.getArtistTable", data);
+    });
+
+    ipc.on("data.getCoverArt", async (event, { fileIds }: { fileIds: number[] }) => {
+        if (!fileIds?.length) return [];
+        const data = await prisma.file.findMany({
+            where: {
+                id: {
+                    in: fileIds,
+                },
+            },
+            select: {
+                id: true,
+                currentPath: true,
+            },
+        });
+        if (!data) return [];
+
+        const coverArtData = (
+            await Promise.allSettled(
+                data.map(async (d) => {
+                    const musicData = new MusicData(d.currentPath);
+                    const cover = await musicData.getCover();
+                    return { fileId: d.id, cover };
+                })
+            )
+        )
+            .map((d) => d.status === "fulfilled" && d.value.cover && d.value)
+            .filter(Boolean);
+        event.reply("data.getCoverArt", coverArtData);
     });
 };
 
