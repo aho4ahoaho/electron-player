@@ -3,6 +3,9 @@ import { getMusicTable } from "./music";
 import { MusicPlayer } from "./music/player";
 import { readFile } from "fs/promises";
 import { type BrowserWindow } from "electron";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 /*eslint-disable @typescript-eslint/no-unused-vars*/
 /*eslint-disable @typescript-eslint/no-explicit-any*/
@@ -10,7 +13,12 @@ import { type BrowserWindow } from "electron";
 export const setupIpc = (ipc: IpcMain) => {
     ipc.on("data.getMusicTable", async (event, arg: { targetDirPath: string[]; search: any }) => {
         const data = await getMusicTable(arg.targetDirPath, { search: arg.search });
-        event.reply("data.getMusicTable", data);
+        event.reply("data.getMusicTable", data, arg.search);
+    });
+
+    ipc.on("data.getAlbumTable", async (event) => {
+        const data = await prisma.$queryRaw`SELECT album,fileId FROM MusicData WHERE album IS NOT NULL GROUP BY album;`;
+        event.reply("data.getAlbumTable", data);
     });
 };
 
@@ -61,8 +69,10 @@ export const setupIpcDefer = (ipc: IpcMain, { mainWindow }: { mainWindow: Browse
         await setFile();
     });
     ipc.on("player.next", async () => {
+        console.log("next3");
         await skipTrack();
         await setFile();
+        console.log("next4");
     });
     ipc.on("player.prev", async () => {
         await skipTrack(true);

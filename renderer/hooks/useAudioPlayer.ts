@@ -1,6 +1,6 @@
 import { PlayerState } from "@main/components/music/player";
 import { MusicData } from "@prisma/client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type AudioController = {
     play: () => void;
@@ -32,26 +32,29 @@ export const useAudioPlayer = () => {
     }, [volume]);
 
     const prevSeekTimeRef = useRef<NodeJS.Timeout>();
-    const controller: AudioController = {
-        ...staticController,
-        play: () => {
-            audioElmRef.current?.play();
-            setState("playing");
-        },
-        pause: () => {
-            audioElmRef.current?.pause();
-            setState("paused");
-        },
-        seek: (time: number) => {
-            if (!audioElmRef.current) return;
-            clearTimeout(prevSeekTimeRef.current);
-            audioElmRef.current?.pause();
-            audioElmRef.current.currentTime = time;
-            prevSeekTimeRef.current = setTimeout(() => {
+    const controller: AudioController = useMemo(
+        () => ({
+            ...staticController,
+            play: () => {
                 audioElmRef.current?.play();
-            }, 200);
-        },
-    };
+                setState("playing");
+            },
+            pause: () => {
+                audioElmRef.current?.pause();
+                setState("paused");
+            },
+            seek: (time: number) => {
+                if (!audioElmRef.current) return;
+                clearTimeout(prevSeekTimeRef.current);
+                audioElmRef.current?.pause();
+                audioElmRef.current.currentTime = time;
+                prevSeekTimeRef.current = setTimeout(() => {
+                    audioElmRef.current?.play();
+                }, 200);
+            },
+        }),
+        [audioElmRef, setState]
+    );
 
     useEffect(() => {
         const audioElement = audioElmRef.current;
@@ -65,6 +68,7 @@ export const useAudioPlayer = () => {
             const blob = new Blob([buffer]);
             const url = URL.createObjectURL(blob);
             audioElement.src = url;
+            setCurrentTime(0);
         });
 
         window.ipc.on("player.stop", () => {
@@ -112,7 +116,9 @@ export const useAudioPlayer = () => {
 
 export const staticController = {
     next: () => {
+        console.log("next1");
         window.ipc.send("player.next", null);
+        console.log("next2");
     },
     prev: () => {
         window.ipc.send("player.prev", null);

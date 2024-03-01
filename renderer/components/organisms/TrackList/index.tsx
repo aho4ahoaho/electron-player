@@ -3,15 +3,15 @@ import { MusicData } from "@prisma/client";
 import { formatTime } from "../../../utils/time";
 import { formatDataSize } from "../../../utils/dataSize";
 import style from "./style.module.scss";
-import { staticController } from "@renderer/hooks/useAudioPlayer";
 
 type Props = {
     musicData: MusicData[];
+    selectTrack?: (record: MusicData, index: number) => void;
 };
 
 const { Column } = Table;
 
-export const TrackList = ({ musicData }: Props) => {
+export const TrackList = ({ musicData, selectTrack }: Props) => {
     return (
         <Table
             dataSource={musicData.map((d) => ({ ...d, key: d.id }))}
@@ -19,9 +19,7 @@ export const TrackList = ({ musicData }: Props) => {
                 return {
                     className: style.row,
                     onClick: () => {
-                        const fileIds = musicData.map((d) => d.fileId);
-                        fileIds.splice(0, index ?? 0);
-                        staticController.setQueue(fileIds, true);
+                        selectTrack?.(record, index ?? 0);
                     },
                 };
             }}
