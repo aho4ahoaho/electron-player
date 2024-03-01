@@ -3,6 +3,7 @@ import { MusicData } from "@prisma/client";
 import { formatTime } from "../../../utils/time";
 import { formatDataSize } from "../../../utils/dataSize";
 import style from "./style.module.scss";
+import { staticController } from "@renderer/hooks/useAudioPlayer";
 
 type Props = {
     musicData: MusicData[];
@@ -20,10 +21,7 @@ export const TrackList = ({ musicData }: Props) => {
                     onClick: () => {
                         const fileIds = musicData.map((d) => d.fileId);
                         fileIds.splice(0, index ?? 0);
-                        window.ipc.send<{ fileIds: number[]; play: boolean }>("player.setQueue", {
-                            fileIds,
-                            play: true,
-                        });
+                        staticController.setQueue(fileIds, true);
                     },
                 };
             }}

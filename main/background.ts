@@ -28,27 +28,14 @@ if (isProd) {
         app.quit();
     });
 
-    const playerWindow = createWindow("player", {
-        width: 300,
-        height: 300,
-        webPreferences: {
-            preload: path.join(__dirname, "preload.js"),
-        },
-        titleBarStyle: "hidden",
-    });
-    playerWindow.setIgnoreMouseEvents(true);
-
     if (isProd) {
         await mainWindow.loadURL("app://./index.html");
-        await playerWindow.loadURL("app://./player.html");
     } else {
         const port = process.argv[2];
         await mainWindow.loadURL(`http://localhost:${port}/`);
         mainWindow.webContents.openDevTools({ mode: "detach", activate: false });
-        await playerWindow.loadURL(`http://localhost:${port}/player`);
-        playerWindow.webContents.openDevTools({ mode: "detach", activate: false });
     }
-    setupIpcDefer(ipcMain, { mainWindow, playerWindow });
+    setupIpcDefer(ipcMain, { mainWindow });
 })();
 
 setupIpc(ipcMain);
