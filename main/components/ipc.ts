@@ -25,7 +25,7 @@ export const setupIpc = (ipc: IpcMain) => {
             return [];
         }
         const data = await getMusicTable(arg.targetDirPath, { forceScan: true });
-        event.reply("data.rescanData", data);
+        event.reply("data.rescanMusicTable", data);
     });
 
     ipc.on("data.getAlbumTable", async (event) => {

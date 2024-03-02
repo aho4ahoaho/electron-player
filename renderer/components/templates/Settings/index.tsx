@@ -1,12 +1,21 @@
 import { Button, Flex } from "antd";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import style from "./style.module.scss";
 import { FolderPicker, getTargetDirPath } from "@renderer/components/organisms/FolderPicker";
 
 export const SettingsPage: React.FC = () => {
+    const [scanning, setScanning] = useState(false);
+
+    useEffect(() => {
+        window.ipc.on("data.rescanMusicTable", () => {
+            setScanning(false);
+        });
+    }, []);
+
     const rescanData = useCallback(async () => {
         const targetDirPath = getTargetDirPath();
         window.ipc.send("data.rescanMusicTable", { targetDirPath: targetDirPath });
+        setScanning(true);
     }, []);
 
     return (
@@ -24,6 +33,7 @@ export const SettingsPage: React.FC = () => {
                     }}
                     type="primary"
                     style={{ backgroundColor: "rgb(255, 193, 7)", color: "black" }}
+                    loading={scanning}
                 >
                     フォルダの再スキャン
                 </Button>
