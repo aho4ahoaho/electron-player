@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../database";
 
 export type PlayerState = "playing" | "paused" | "stopped";
 export class MusicPlayer {

@@ -3,10 +3,8 @@ import { getMusicTable } from "./music";
 import { MusicPlayer } from "./music/player";
 import { readFile } from "fs/promises";
 import { type BrowserWindow } from "electron";
-import { PrismaClient } from "@prisma/client";
 import { MusicData } from "./file/musicData";
-
-const prisma = new PrismaClient();
+import { prisma } from "./database";
 
 /*eslint-disable @typescript-eslint/no-unused-vars*/
 /*eslint-disable @typescript-eslint/no-explicit-any*/

@@ -1,7 +1,6 @@
 import { getDirs } from "../file";
-import { Prisma, PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { Prisma } from "@prisma/client";
+import { prisma } from "../database";
 
 export type MusicTableSearchOption = Prisma.MusicDataWhereInput;
 export const getMusicTable = async (

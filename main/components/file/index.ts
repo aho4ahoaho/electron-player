@@ -1,7 +1,7 @@
 import { Directory } from "./dir";
-import { PrismaClient, Directory as DirectoryRow, Prisma } from "@prisma/client";
+import { Directory as DirectoryRow, Prisma } from "@prisma/client";
 
-const prisma = new PrismaClient({});
+import { prisma } from "../database";
 
 export const getDirs = async (
     targetDirPath: string[],
