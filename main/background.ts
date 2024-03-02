@@ -21,8 +21,8 @@ if (isProd) {
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
         },
-        titleBarStyle: "hidden",
     });
+    mainWindow.setMenuBarVisibility(false);
 
     mainWindow.on("closed", () => {
         app.quit();
