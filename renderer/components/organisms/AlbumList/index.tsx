@@ -1,43 +1,20 @@
 import { AlbumData } from "@renderer/components/templates/MainPage";
-import { Flex } from "antd";
 import style from "./style.module.scss";
 import { useEffect, useState } from "react";
+import { AlbumItem } from "@renderer/components/molecules/AlbumItem";
 
 type Props = {
     albumData: AlbumData[];
     selectAlbum: (album?: string) => void;
 };
-type CoverArt = { fileId: number; cover: Buffer; blob: string };
+type CoverArt = { fileId: number; cover: Buffer };
 export const AlbumList = ({ albumData, selectAlbum }: Props) => {
     const [coverArt, setCoverArt] = useState<CoverArt[]>([]);
 
     useEffect(() => {
         window.ipc.on<CoverArt[]>("data.getCoverArt", (data) => {
-            const knownArt = [];
-            const newArt = [];
-
-            for (const d of data) {
-                if (coverArt.some((c) => c.fileId === d.fileId)) {
-                    knownArt.push(d);
-                } else {
-                    newArt.push(d);
-                }
-            }
-            setCoverArt([
-                ...knownArt,
-                ...newArt.map((d) => ({ ...d, blob: URL.createObjectURL(new Blob([d.cover])) })),
-            ]);
-
-            const unusedArt = coverArt.filter((c) => !data.some((d) => d.fileId === c.fileId));
-            unusedArt.forEach((d) => {
-                URL.revokeObjectURL(d.blob);
-            });
+            setCoverArt(data);
         });
-        return () => {
-            coverArt.forEach((d) => {
-                URL.revokeObjectURL(d.blob);
-            });
-        };
     }, [coverArt]);
 
     useEffect(() => {
@@ -45,32 +22,19 @@ export const AlbumList = ({ albumData, selectAlbum }: Props) => {
     }, [albumData]);
 
     return (
-        <Flex className={style.container}>
-            <div
-                className={style.items}
-                onClick={() => {
-                    selectAlbum(undefined);
-                }}
-            >
-                <img className={style.album_art} src="https://via.placeholder.com/128" alt="" />
-                <span className={style.title}>全ての楽曲</span>
-            </div>
+        <div className={style.container}>
+            <AlbumItem
+                albumName="全ての楽曲"
+                onClick={() => selectAlbum(undefined)}
+                coverArt="https://via.placeholder.com/128"
+            />
             {albumData.map(({ album, fileId }) => {
                 const albumName = album == "" ? "無名のアルバム" : album;
-                const cover = coverArt.find((d) => d.fileId === fileId)?.blob ?? "https://via.placeholder.com/128";
+                const cover = coverArt.find((d) => d.fileId === fileId)?.cover ?? "https://via.placeholder.com/128";
                 return (
-                    <div
-                        key={album}
-                        className={style.items}
-                        onClick={() => {
-                            selectAlbum(album);
-                        }}
-                    >
-                        <img className={style.album_art} src={cover} alt="" />
-                        <span className={style.title}>{albumName}</span>
-                    </div>
+                    <AlbumItem key={album} albumName={albumName} onClick={() => selectAlbum(album)} coverArt={cover} />
                 );
             })}
-        </Flex>
+        </div>
     );
 };

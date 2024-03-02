@@ -1,37 +1,9 @@
 .container {
+    display: grid;
     width: 100%;
-    flex-wrap: wrap;
     gap: 16px;
     padding: 16px;
-}
+    margin: 0 auto;
 
-.items {
-    width: 128px;
-    height: 152px;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    transition:
-        filter 0.3s,
-        box-shadow 0.3s;
-    border-radius: 8px;
-    cursor: pointer;
-    user-select: none;
-
-    &:hover {
-        filter: brightness(0.8);
-    }
-
-    .album_art {
-        width: 128px;
-        height: 128px;
-        border-radius: 8px;
-    }
-
-    .title {
-        width: 128px;
-        height: 24px;
-        line-height: 24px;
-        text-align: center;
-    }
+    grid-template-columns: repeat(auto-fill, minmax(192px, 1fr));
 }

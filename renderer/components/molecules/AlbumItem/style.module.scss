@@ -1,0 +1,32 @@
+.items {
+    width: 192px;
+    height: calc(192px + 48px);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    transition:
+        filter 0.3s,
+        box-shadow 0.3s;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+        filter: brightness(0.8);
+    }
+
+    .album_art {
+        width: 192px;
+        height: 192px;
+        border-radius: 8px;
+    }
+
+    .title {
+        width: 192px;
+        height: 48px;
+        line-height: 24px;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
