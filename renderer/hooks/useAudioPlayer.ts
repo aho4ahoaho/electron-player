@@ -49,7 +49,7 @@ export const useAudioPlayer = () => {
                 audioElmRef.current?.pause();
                 audioElmRef.current.currentTime = time;
                 prevSeekTimeRef.current = setTimeout(() => {
-                    audioElmRef.current?.play();
+                    controller.play();
                 }, 200);
             },
         }),
@@ -61,7 +61,7 @@ export const useAudioPlayer = () => {
         if (!audioElement) return;
 
         window.ipc.on<Buffer>("player.setFile", (buffer) => {
-            audioElement.pause();
+            controller.pause();
             if (audioElement.src) {
                 URL.revokeObjectURL(audioElement.src);
             }
@@ -73,7 +73,7 @@ export const useAudioPlayer = () => {
 
         window.ipc.on("player.stop", () => {
             if (!audioElement.src) return;
-            audioElement.pause();
+            controller.pause();
             URL.revokeObjectURL(audioElement.src);
             audioElement.src = "";
         });
@@ -87,7 +87,7 @@ export const useAudioPlayer = () => {
         };
         audioElement.addEventListener("timeupdate", onTimeUpdate);
         const onLoadedMetadata = () => {
-            audioElement.play();
+            controller.play();
         };
         audioElement.addEventListener("loadedmetadata", onLoadedMetadata);
         return () => {

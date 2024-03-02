@@ -1,21 +1,27 @@
 import { useState } from "react";
-import { MainPage, useMainPage } from "@renderer/components/templates/MainPage";
+import { MainPage, MainPageTab, useMainPage } from "@renderer/components/templates/MainPage";
 import { Layout } from "antd";
-import { Page } from "@renderer/utils/pageState";
-import { Header } from "@renderer/components/molecules/Header";
+import { Header, HeaderTab } from "@renderer/components/molecules/Header";
 import { PlayerController } from "@renderer/components/organisms/PlayerController";
 import { SettingsPage } from "@renderer/components/templates/Settings";
-
+const MainPageKey: Array<MainPageTab | string> = ["NowPlaying", "Album", "Track"];
 const HomePage = () => {
-    const [page, setPage] = useState<Page>("Home");
+    const [page, setPage] = useState<HeaderTab>("Album");
 
     const mainPageProps = useMainPage();
-    const { setNowPlaying } = mainPageProps;
+    const { setNowPlaying, playlist, musicData } = mainPageProps;
 
     return (
         <Layout>
-            <Header page={page} setPage={setPage} />
-            {page === "Home" && <MainPage {...mainPageProps} />}
+            <Header
+                page={page}
+                setPage={setPage}
+                disabledItem={{
+                    NowPlaying: playlist.length === 0,
+                    Track: musicData.length === 0,
+                }}
+            />
+            {MainPageKey.includes(page) && <MainPage {...mainPageProps} tab={page} setTab={setPage} />}
             {page === "Settings" && <SettingsPage />}
             <PlayerController setNowPlaying={setNowPlaying} />
         </Layout>

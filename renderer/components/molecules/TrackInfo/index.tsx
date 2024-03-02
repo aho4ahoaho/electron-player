@@ -27,9 +27,12 @@ export const TrackView = ({ musicData }: Props) => {
     }, [coverArt]);
 
     useEffect(() => {
-        if (musicData == null) return;
+        if (fileId == null) {
+            setCoverArt(defaultCoverArt);
+            return;
+        }
         window.ipc.send("data.getCoverArt", { fileIds: [fileId] });
-    }, [musicData]);
+    }, [fileId]);
 
     useEffect(() => {
         const title = titleRef.current;
@@ -47,7 +50,7 @@ export const TrackView = ({ musicData }: Props) => {
 
     return (
         <div className={style.container}>
-            <span className={style.cover} style={{ backgroundImage: `url(${coverArt})` }} />
+            <span className={style.cover} style={{ backgroundImage: coverArt ? `url(${coverArt})` : undefined }} />
             <div className={style.infoWrapper}>
                 <div className={style.titleWrapper}>
                     <div className={style.title} ref={titleRef}>

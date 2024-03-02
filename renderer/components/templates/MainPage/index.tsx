@@ -2,17 +2,16 @@ import { useEffect, useState } from "react";
 import type { MusicData } from "@prisma/client";
 import { TrackList } from "@renderer/components/organisms/TrackList";
 import { AlbumList } from "@renderer/components/organisms/AlbumList";
-import { Flex, Menu } from "antd";
-import { ItemType, MenuItemType } from "antd/es/menu/hooks/useItems";
+import { Flex } from "antd";
 import { staticController } from "@renderer/hooks/useAudioPlayer";
 import { NowPlaying } from "@renderer/components/organisms/NowPlaying";
 import { DummyPlayerController } from "@renderer/components/organisms/PlayerController/dummy";
+import { HeaderTab } from "@renderer/components/molecules/Header";
 
 type Props = {
     musicData: MusicData[];
     albumData: AlbumData[];
-    selectAlbum: (album?: string) => void;
-    tab: MainPageTab;
+    tab: HeaderTab;
     setTab: (tab: MainPageTab) => void;
     playlist: MusicData[];
     setPlaylist: (playlist: MusicData[]) => void;
@@ -24,40 +23,7 @@ export type AlbumData = {
     album: string;
     fileId: number;
 };
-export const MainPage = ({
-    musicData,
-    albumData,
-    selectAlbum,
-    tab,
-    setTab,
-    playlist,
-    setPlaylist,
-    nowPlaying,
-}: Props) => {
-    const items: Array<
-        ItemType<MenuItemType> & {
-            key: MainPageTab;
-        }
-    > = [
-        {
-            key: "NowPlaying",
-            label: "NowPlaying",
-            onClick: () => setTab("NowPlaying"),
-            disabled: playlist.length === 0,
-        },
-        {
-            key: "Album",
-            label: "Album",
-            onClick: () => setTab("Album"),
-        },
-        {
-            key: "Track",
-            label: "Track",
-            onClick: () => setTab("Track"),
-            disabled: musicData.length === 0,
-        },
-    ];
-
+export const MainPage = ({ musicData, albumData, tab, setTab, playlist, setPlaylist, nowPlaying }: Props) => {
     const selectTrack = (record: MusicData, index: number) => {
         const fileIds = musicData.map((d) => d.fileId);
         fileIds.splice(0, index);
@@ -72,11 +38,15 @@ export const MainPage = ({
         staticController.setQueue(fileIds);
     };
 
+    const selectAlbum = (album?: string) => {
+        window.ipc.send("data.getMusicTable", { targetDirPath: ["~/Music"], search: { album } });
+        setTab("Track");
+    };
+
     return (
         <>
-            <Menu items={items} selectedKeys={[tab]} mode="horizontal" style={{ width: "100%" }} />
             {tab === "NowPlaying" && (
-                <Flex style={{ display: "flex", height: "calc(100vh - 64px - 46px)" }} vertical>
+                <Flex style={{ display: "flex", height: "calc(100vh - 64px)" }} vertical>
                     <NowPlaying playlist={playlist} nowPlaying={nowPlaying} selectTrack={selectPlaylistTrack} />
                     <DummyPlayerController style={{ flexShrink: 0, flexGrow: 0 }} />
                 </Flex>
@@ -97,9 +67,8 @@ export const MainPage = ({
     );
 };
 
-type MainPageTab = "Track" | "Album" | "NowPlaying";
-export const useMainPage = (): Props => {
-    const [tab, setTab] = useState<MainPageTab>("Album");
+export type MainPageTab = "Track" | "Album" | "NowPlaying";
+export const useMainPage = (): Omit<Props, "tab" | "setTab"> => {
     const [musicData, setMusicData] = useState<MusicData[]>([]);
     const [albumData, setAlbumData] = useState<AlbumData[]>([]);
     const [playlist, setPlaylist] = useState<MusicData[]>([]);
@@ -121,10 +90,5 @@ export const useMainPage = (): Props => {
         window.ipc.send("data.getAlbumTable", null);
     }, []);
 
-    const selectAlbum = (album?: string) => {
-        window.ipc.send("data.getMusicTable", { targetDirPath: ["~/Music"], search: { album } });
-        setTab("Track");
-    };
-
-    return { musicData, albumData, selectAlbum, tab, setTab, playlist, setPlaylist, nowPlaying, setNowPlaying };
+    return { musicData, albumData, playlist, setPlaylist, nowPlaying, setNowPlaying };
 };
