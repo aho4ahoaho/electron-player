@@ -43,10 +43,14 @@ export const PlayerController = ({ setNowPlaying }: Props) => {
                 <NextBtn onClick={controller.next} />
                 <Flex vertical style={{ flex: 1 }}>
                     <Flex justify="space-between">
-                        <span>{musicData?.title ?? "再生中の楽曲はありません"}</span>
-                        <span>
-                            {formatTime(currentTime)} / {formatTime(musicData?.duration)}
-                        </span>
+                        <div className={style.titleWrapper}>
+                            <span className={style.title}>{musicData?.title ?? "再生中の楽曲はありません"}</span>
+                        </div>
+                        <div className={style.timeWrapper}>
+                            <span className={style.time}>
+                                {formatTime(currentTime)} / {formatTime(musicData?.duration)}
+                            </span>
+                        </div>
                     </Flex>
                     <Slider
                         min={0}

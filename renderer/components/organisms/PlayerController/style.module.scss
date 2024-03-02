@@ -23,4 +23,30 @@
             font-size: 32px;
         }
     }
+
+    .titleWrapper {
+        display: flex;
+        flex: 1;
+        align-items: center;
+
+        .title {
+            display: inline-block;
+            flex: 1;
+            width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .timeWrapper {
+        display: flex;
+        align-items: center;
+
+        .time {
+            width: max-content;
+            flex-shrink: 0;
+            vertical-align: middle;
+        }
+    }
 }
