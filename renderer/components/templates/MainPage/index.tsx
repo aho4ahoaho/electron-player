@@ -7,6 +7,7 @@ import { staticController } from "@renderer/hooks/useAudioPlayer";
 import { NowPlaying } from "@renderer/components/organisms/NowPlaying";
 import { DummyPlayerController } from "@renderer/components/organisms/PlayerController/dummy";
 import { HeaderTab } from "@renderer/components/molecules/Header";
+import { getTargetDirPath } from "@renderer/components/organisms/FolderPicker";
 
 type Props = {
     musicData: MusicData[];
@@ -39,7 +40,8 @@ export const MainPage = ({ musicData, albumData, tab, setTab, playlist, setPlayl
     };
 
     const selectAlbum = (album?: string) => {
-        window.ipc.send("data.getMusicTable", { targetDirPath: ["~/Music"], search: { album } });
+        const targetDirPath = getTargetDirPath();
+        window.ipc.send("data.getMusicTable", { targetDirPath: targetDirPath, search: { album } });
         setTab("Track");
     };
 

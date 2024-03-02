@@ -105,17 +105,17 @@ const generateDirTable = async (dirPaths: string[]): Promise<DirectoryRow[]> => 
 };
 
 export const scanDirectories = async (dirPaths: string[]): Promise<Directory[]> => {
-    const dirs = (await Promise.all(
-        dirPaths
-            .map(async (d) => {
+    const dirs = (
+        await Promise.all(
+            dirPaths.map(async (d) => {
                 const dirs: Directory | null = await scanSignleDir(d).catch((e) => {
                     console.error(e);
                     return null;
                 });
                 return dirs;
             })
-            .filter((d) => d)
-    )) as Directory[]; //filterしているのでアサーションしてしまう
+        )
+    ).filter((d) => d) as Directory[]; //filterしているのでアサーションしてしまう
     return dirs;
 };
 

@@ -1,20 +1,8 @@
 import path from "path";
 import { MusicData } from "./musicData";
 
-const SupportAudioExt = [
-    ".mp3",
-    ".flac",
-    ".wav",
-    ".ogg",
-    ".m4a",
-    ".wma",
-    ".aac",
-    ".aiff",
-    ".alac",
-    ".ape",
-    ".dsf",
-    ".dff",
-];
+//https://www.chromium.org/audio-video/
+const SupportAudioExt = [".mp3", ".flac", ".wav", ".ogg", ".m4a", ".aac", ".opus"];
 
 export class File {
     readonly currentPath: string;
