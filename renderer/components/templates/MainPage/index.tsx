@@ -97,6 +97,10 @@ export const useMainPage = (): Props => {
             setMusicData(msg);
         });
 
+        window.ipc.on<MusicData[]>("data.rescanMusicTable", (msg) => {
+            setMusicData(msg);
+        });
+
         window.ipc.on<AlbumData[]>("data.getAlbumTable", (msg) => {
             setAlbumData(msg);
         });
