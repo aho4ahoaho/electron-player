@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import type { MusicData } from "@prisma/client";
 import { TrackList } from "@renderer/components/organisms/TrackList";
 import { AlbumList } from "@renderer/components/organisms/AlbumList";
-import { Menu } from "antd";
+import { Flex, Menu } from "antd";
 import { ItemType, MenuItemType } from "antd/es/menu/hooks/useItems";
 import { staticController } from "@renderer/hooks/useAudioPlayer";
+import { NowPlaying } from "@renderer/components/organisms/NowPlaying";
+import { DummyPlayerController } from "@renderer/components/organisms/PlayerController/dummy";
 
 type Props = {
     musicData: MusicData[];
@@ -12,8 +14,8 @@ type Props = {
     selectAlbum: (album?: string) => void;
     tab: MainPageTab;
     setTab: (tab: MainPageTab) => void;
-    playlists: MusicData[];
-    setPlaylists: (playlists: MusicData[]) => void;
+    playlist: MusicData[];
+    setPlaylist: (playlist: MusicData[]) => void;
     nowPlaying: MusicData | null;
     setNowPlaying: (nowPlaying: MusicData | null) => void;
 };
@@ -28,8 +30,8 @@ export const MainPage = ({
     selectAlbum,
     tab,
     setTab,
-    playlists,
-    setPlaylists,
+    playlist,
+    setPlaylist,
     nowPlaying,
 }: Props) => {
     const items: Array<
@@ -38,9 +40,10 @@ export const MainPage = ({
         }
     > = [
         {
-            key: "Playlist",
-            label: "Playlist",
-            onClick: () => setTab("Playlist"),
+            key: "NowPlaying",
+            label: "NowPlaying",
+            onClick: () => setTab("NowPlaying"),
+            disabled: playlist.length === 0,
         },
         {
             key: "Album",
@@ -51,6 +54,7 @@ export const MainPage = ({
             key: "Track",
             label: "Track",
             onClick: () => setTab("Track"),
+            disabled: musicData.length === 0,
         },
     ];
 
@@ -58,12 +62,12 @@ export const MainPage = ({
         const fileIds = musicData.map((d) => d.fileId);
         fileIds.splice(0, index);
         staticController.setQueue(fileIds);
-        setPlaylists([...musicData]);
-        setTab("Playlist");
+        setPlaylist([...musicData]);
+        setTab("NowPlaying");
     };
 
     const selectPlaylistTrack = (_record: MusicData, index: number) => {
-        const fileIds = playlists.map((d) => d.fileId);
+        const fileIds = playlist.map((d) => d.fileId);
         fileIds.splice(0, index);
         staticController.setQueue(fileIds);
     };
@@ -71,25 +75,34 @@ export const MainPage = ({
     return (
         <>
             <Menu items={items} selectedKeys={[tab]} mode="horizontal" style={{ width: "100%" }} />
-            {tab === "Playlist" && (
-                <TrackList
-                    musicData={playlists}
-                    nowPlaying={nowPlaying ?? undefined}
-                    selectTrack={selectPlaylistTrack}
-                />
+            {tab === "NowPlaying" && (
+                <Flex style={{ display: "flex", height: "calc(100vh - 64px - 46px)" }} vertical>
+                    <NowPlaying playlist={playlist} nowPlaying={nowPlaying} selectTrack={selectPlaylistTrack} />
+                    <DummyPlayerController style={{ flexShrink: 0, flexGrow: 0 }} />
+                </Flex>
             )}
-            {tab === "Track" && <TrackList musicData={musicData} selectTrack={selectTrack} />}
-            {tab === "Album" && <AlbumList albumData={albumData} selectAlbum={selectAlbum} />}
+            {tab === "Track" && (
+                <>
+                    <TrackList musicData={musicData} selectTrack={selectTrack} />
+                    <DummyPlayerController />
+                </>
+            )}
+            {tab === "Album" && (
+                <>
+                    <AlbumList albumData={albumData} selectAlbum={selectAlbum} />
+                    <DummyPlayerController />
+                </>
+            )}
         </>
     );
 };
 
-type MainPageTab = "Track" | "Album" | "Playlist";
+type MainPageTab = "Track" | "Album" | "NowPlaying";
 export const useMainPage = (): Props => {
     const [tab, setTab] = useState<MainPageTab>("Album");
     const [musicData, setMusicData] = useState<MusicData[]>([]);
     const [albumData, setAlbumData] = useState<AlbumData[]>([]);
-    const [playlists, setPlaylists] = useState<MusicData[]>([]);
+    const [playlist, setPlaylist] = useState<MusicData[]>([]);
     const [nowPlaying, setNowPlaying] = useState<MusicData | null>(null);
 
     useEffect(() => {
@@ -113,5 +126,5 @@ export const useMainPage = (): Props => {
         setTab("Track");
     };
 
-    return { musicData, albumData, selectAlbum, tab, setTab, playlists, setPlaylists, nowPlaying, setNowPlaying };
+    return { musicData, albumData, selectAlbum, tab, setTab, playlist, setPlaylist, nowPlaying, setNowPlaying };
 };

@@ -26,22 +26,19 @@ export const TrackList = ({ musicData, selectTrack, nowPlaying }: Props) => {
                     },
                 };
             }}
+            pagination={false}
         >
-            <Column
-                title="No"
-                dataIndex="trackNo"
-                key="trackNo"
-                render={(value) => <span className={style.center}>{value}</span>}
-            />
+            <Column title="No" dataIndex="trackNo" key="trackNo" className={style.center} width={12} />
             <Column title="Title" dataIndex="title" key="title" />
             <Column title="Artist" dataIndex="artist" key="artist" />
             <Column title="Album" dataIndex="album" key="album" />
-            <Column title="Year" dataIndex="year" key="year" />
+            <Column title="Year" dataIndex="year" key="year" width={16 * 4} />
             <Column
                 title="Duration"
                 dataIndex="duration"
                 key="duration"
                 render={(value) => <span>{formatTime(value)}</span>}
+                width={16 * 4}
             />
             <Column<MusicData>
                 title="Format"
@@ -49,9 +46,11 @@ export const TrackList = ({ musicData, selectTrack, nowPlaying }: Props) => {
                 key="codec"
                 render={(value, record) => (
                     <span>
-                        {value} {formatDataSize(record.bitrate ?? 0, 0)}bps
+                        {value}
+                        {formatDataSize(record.bitrate ?? 0, 0)}bps
                     </span>
                 )}
+                width={16 * 12}
             />
         </Table>
     );

@@ -26,11 +26,11 @@ export const AlbumList = ({ albumData, selectAlbum }: Props) => {
             <AlbumItem
                 albumName="全ての楽曲"
                 onClick={() => selectAlbum(undefined)}
-                coverArt="https://via.placeholder.com/128"
+                coverArt="https://via.placeholder.com/192"
             />
             {albumData.map(({ album, fileId }) => {
                 const albumName = album == "" ? "無名のアルバム" : album;
-                const cover = coverArt.find((d) => d.fileId === fileId)?.cover ?? "https://via.placeholder.com/128";
+                const cover = coverArt.find((d) => d.fileId === fileId)?.cover ?? "https://via.placeholder.com/192";
                 return (
                     <AlbumItem key={album} albumName={albumName} onClick={() => selectAlbum(album)} coverArt={cover} />
                 );
