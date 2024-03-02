@@ -58,6 +58,7 @@ div.title {
         white-space: nowrap;
         font-weight: bold;
         font-size: 32px;
+        color: rgba(0, 0, 0, 0.88);
 
         &.marquee {
             animation: slideIn 20s linear infinite;
@@ -73,4 +74,5 @@ div.album {
     display: flex;
     justify-content: center;
     align-items: center;
+    color: rgba(0, 0, 0, 0.88);
 }

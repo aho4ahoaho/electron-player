@@ -36,6 +36,7 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            color: rgba(0, 0, 0, 0.88);
         }
     }
 
@@ -47,6 +48,7 @@
             width: max-content;
             flex-shrink: 0;
             vertical-align: middle;
+            color: rgba(0, 0, 0, 0.88);
         }
     }
 }
