@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import style from "./style.module.scss";
+import { defaultCoverArt } from "@renderer/utils/image";
 
 type Props = {
     albumName: string;
@@ -7,7 +8,7 @@ type Props = {
     coverArt: string | Buffer;
 };
 export const AlbumItem = ({ albumName, onClick, coverArt }: Props) => {
-    const [coverSrc, setCoverSrc] = useState<string>("https://via.placeholder.com/128");
+    const [coverSrc, setCoverSrc] = useState<string>(defaultCoverArt);
 
     useEffect(() => {
         if (typeof coverArt === "string") {

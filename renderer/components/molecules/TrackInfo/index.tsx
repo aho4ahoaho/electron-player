@@ -1,12 +1,12 @@
 import { MusicData } from "@prisma/client";
 import { useEffect, useRef, useState } from "react";
 import style from "./style.module.scss";
+import { defaultCoverArt } from "@renderer/utils/image";
 
 type Props = {
     musicData?: MusicData;
 };
 type CoverArt = { fileId: number; cover: Buffer };
-const defaultCoverArt = "https://via.placeholder.com/500";
 export const TrackView = ({ musicData }: Props) => {
     const [coverArt, setCoverArt] = useState<string>();
     const { artist, fileId, title, album } = musicData ?? {};
