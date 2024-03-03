@@ -25,7 +25,7 @@ export const QueueView = ({ playlist, nowPlaying, selectTrack }: Props) => {
                     },
                 };
             }}
-            style={{ width: "100%", height: "100%", overflow: "auto" }}
+            style={{ width: "100%", height: "100%", overflow: "auto", backgroundColor: "white" }}
             pagination={false}
         >
             <Column title="No" dataIndex="trackNo" key="trackNo" className={style.center} />
