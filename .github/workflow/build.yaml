@@ -1,0 +1,35 @@
+name: build
+on: 
+  workflow_dispatch:
+      
+jobs:
+  build: 
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: sudo dpkg --add-architecture i386 
+      - run: sudo mkdir -pm755 /etc/apt/keyrings
+      - run: sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
+      - run: sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-jammy.sources
+      - run: sudo apt-get update
+      - run: sudo apt install --install-recommends winehq-stable
+      - run: yarn install
+      - run: yarn build --win --linux
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows_binary
+          path: dist/*.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux_binary
+          path: dist/*.AppImage
