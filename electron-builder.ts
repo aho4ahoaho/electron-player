@@ -13,7 +13,7 @@ const electronBuilderConfig = {
         },
     ],
     publish: null,
-    extraResources: ["./node_modules/.prisma/**", "./node_modules/@prisma/**"],
+    extraResources: ["prisma/**/*", "node_modules/.prisma/**/*", "node_modules/@prisma/client/**/*"],
     win: {
         target: "nsis",
         icon: "build/icon.ico",
