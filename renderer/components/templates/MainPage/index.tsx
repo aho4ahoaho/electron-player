@@ -54,16 +54,16 @@ export const MainPage = ({ musicData, albumData, tab, setTab, playlist, setPlayl
                 </Flex>
             )}
             {tab === "Track" && (
-                <>
+                <Flex style={{ display: "flex", height: "calc(100vh - 64px)" }} vertical>
                     <TrackList musicData={musicData} selectTrack={selectTrack} />
                     <DummyPlayerController />
-                </>
+                </Flex>
             )}
             {tab === "Album" && (
-                <>
+                <Flex style={{ display: "flex", height: "calc(100vh - 64px)" }} vertical>
                     <AlbumList albumData={albumData} selectAlbum={selectAlbum} />
                     <DummyPlayerController />
-                </>
+                </Flex>
             )}
         </>
     );

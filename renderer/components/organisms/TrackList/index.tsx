@@ -27,6 +27,7 @@ export const TrackList = ({ musicData, selectTrack, nowPlaying }: Props) => {
                 };
             }}
             pagination={false}
+            style={{ height: 0, flex: 1, overflowY: "scroll" }}
         >
             <Column title="No" dataIndex="trackNo" key="trackNo" className={style.center} width={12} />
             <Column title="Title" dataIndex="title" key="title" />
