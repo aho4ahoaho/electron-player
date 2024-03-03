@@ -8,6 +8,9 @@ export const getDirs = async (
     targetDirPath: string[],
     { forceScan }: { forceScan?: boolean } = {}
 ): Promise<DirectoryRow[]> => {
+    if (forceScan) {
+        await prisma.directory.deleteMany({});
+    }
     const dirPaths = targetDirPath
         .filter((d) => typeof d === "string")
         .filter((d) => d.length > 0)

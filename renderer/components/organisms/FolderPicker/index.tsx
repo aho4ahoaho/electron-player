@@ -17,13 +17,13 @@ export const FolderPicker = ({ onChange }: Props) => {
     const addPathHandler = useCallback((newPath: string) => {
         setFolderPath((prev) => {
             const newFolders = Array.from(new Set([...prev, newPath]));
-            localStorage.setItem("targetDirPath", JSON.stringify(newFolders));
             return newFolders;
         });
     }, []);
 
     useEffect(() => {
         onChange?.(folderPath);
+        localStorage.setItem("targetDirPath", JSON.stringify(folderPath));
     }, [folderPath, onChange]);
 
     return (
