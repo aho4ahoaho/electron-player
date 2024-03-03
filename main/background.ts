@@ -1,7 +1,6 @@
 import path from "path";
-import { app, ipcMain } from "electron";
+import { BrowserWindow, app, ipcMain } from "electron";
 import serve from "electron-serve";
-import { createWindow } from "./helpers";
 import { setupIpc, setupIpcDefer } from "./components/ipc";
 import log from "electron-log/main";
 log.initialize();
@@ -19,7 +18,7 @@ if (isProd) {
 
     log.info("App has started");
 
-    const mainWindow = createWindow("main", {
+    const mainWindow = new BrowserWindow({
         width: 1000,
         height: 600,
         webPreferences: {
@@ -27,6 +26,7 @@ if (isProd) {
             contextIsolation: true,
         },
     });
+
     mainWindow.setMenuBarVisibility(false);
 
     mainWindow.on("closed", () => {
