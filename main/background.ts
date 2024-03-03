@@ -3,6 +3,8 @@ import { app, ipcMain } from "electron";
 import serve from "electron-serve";
 import { createWindow } from "./helpers";
 import { setupIpc, setupIpcDefer } from "./components/ipc";
+import log from "electron-log/main";
+log.initialize();
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -14,6 +16,8 @@ if (isProd) {
 
 (async () => {
     await app.whenReady();
+
+    log.info("App has started");
 
     const mainWindow = createWindow("main", {
         width: 1000,
@@ -27,6 +31,8 @@ if (isProd) {
     mainWindow.on("closed", () => {
         app.quit();
     });
+
+    log.debug("Loading main window");
 
     if (isProd) {
         await mainWindow.loadURL("app://./index.html");

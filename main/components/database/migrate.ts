@@ -1,7 +1,10 @@
 import sqlite3 from "better-sqlite3";
 import { migrations } from "./migrations";
+import log from "electron-log/main";
+log.initialize();
+
 export const connectDatabase = (dbPath: string) => {
-    console.info("dbPath", dbPath);
+    log.info(`Connecting to database at ${dbPath}`);
     const db = new sqlite3(dbPath);
 
     db.pragma("foreign_keys = ON");
@@ -20,7 +23,9 @@ export const connectDatabase = (dbPath: string) => {
         if (!appliedMigrationIds.includes(id)) {
             db.exec(sql);
             db.prepare("INSERT INTO _migrations (id) VALUES (?)").run(id);
+            log.info(`Applied migration ${id}`);
         }
     });
     db.close();
+    log.info("Database migration complete");
 };

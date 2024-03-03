@@ -1,7 +1,8 @@
 import { Directory } from "./dir";
 import { Directory as DirectoryRow, Prisma } from "@prisma/client";
-
+import log from "electron-log/main";
 import { prisma } from "../database";
+log.initialize();
 
 export const getDirs = async (
     targetDirPath: string[],
@@ -27,6 +28,7 @@ export const getDirs = async (
 };
 
 const generateDirTable = async (dirPaths: string[]): Promise<DirectoryRow[]> => {
+    log.info("Scanning directories", dirPaths);
     const flattenDirs = (dir: Directory): Directory[] => {
         const subdir = dir.getSubDirs().reduce((acc, d) => {
             return [...acc, ...flattenDirs(d)];
@@ -96,11 +98,12 @@ const generateDirTable = async (dirPaths: string[]): Promise<DirectoryRow[]> => 
                 });
             })
         ).catch((e) => {
-            console.error(e);
+            log.error(e);
             throw e;
         });
         return upserts;
     });
+    log.info(`Scanned ${dirs.length} directories`);
     return data;
 };
 
